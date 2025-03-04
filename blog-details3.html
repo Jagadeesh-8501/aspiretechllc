@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Details | Aspire Tech LLC</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <!-- Blog Details Section -->
+    <section class="blog-details">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="blog-content">
+                        <img id="blog-image" src="" alt="" class="blog-img">
+                        <h1 id="blog-title"></h1>
+                        <p class="blog-meta">
+                            <span id="blog-author"></span> | <span id="blog-date"></span> | <span id="blog-category"></span>
+                        </p>
+                        <div id="blog-content"></div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar">
+                        <h3>Recent Posts</h3>
+                        <ul id="recent-blogs"></ul>
+
+                        <h3>Share This Post</h3>
+                        <div class="social-share" id="share-links"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    const response = await fetch("blogs.json");
+    const data = await response.json();
+    const blogs = data.blogs;
+
+    // Get blog title from URL and clean it
+    const urlParams = new URLSearchParams(window.location.search);
+    let blogTitle = urlParams.get("title");
+
+    if (!blogTitle) {
+        document.querySelector(".blog-details").innerHTML = "<h2>Blog Not Found</h2>";
+        return;
+    }
+
+    // Remove any numbers or extra characters mistakenly appended
+    blogTitle = blogTitle.replace(/[^a-z0-9-]/gi, ''); // Removes anything that isn't a letter, number, or hyphen
+    console.log("Cleaned URL Slug:", blogTitle);
+
+    // Find blog by slug
+    const blog = blogs.find(b => b.url === blogTitle);
+
+    if (blog) {
+        document.getElementById("blog-image").src = blog.image;
+        document.getElementById("blog-title").innerText = blog.title;
+        document.getElementById("blog-author").innerText = "By " + blog.author;
+        document.getElementById("blog-date").innerText = blog.date;
+        document.getElementById("blog-category").innerText = blog.category;
+
+        // Render blog content
+        const contentDiv = document.getElementById("blog-content");
+        blog.content.forEach(section => {
+            const heading = document.createElement("h2");
+            heading.innerText = section.heading;
+            contentDiv.appendChild(heading);
+
+            const paragraph = document.createElement("p");
+            paragraph.innerText = section.paragraph;
+            contentDiv.appendChild(paragraph);
+        });
+
+        // Populate recent blogs
+        const recentBlogs = document.getElementById("recent-blogs");
+        blogs.slice(0, 5).forEach(recent => {
+            const listItem = document.createElement("li");
+            const anchor = document.createElement("a");
+            anchor.href = `blog-details.html?title=${recent.url}`;
+            anchor.innerText = recent.title;
+            listItem.appendChild(anchor);
+            recentBlogs.appendChild(listItem);
+        });
+    } else {
+        document.querySelector(".blog-details").innerHTML = "<h2>Blog Not Found</h2>";
+    }
+});
+    </script>
+
+</body>
+</html>
+ 

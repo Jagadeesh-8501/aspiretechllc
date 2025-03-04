@@ -1,0 +1,47 @@
+<!-- services-details.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Details - Aspire Tech LLC</title>
+    <script defer src="service-details.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+    </style>
+</head>
+<body>
+    <h1 id="service-title"></h1>
+    <p id="service-description"></p>
+    <p id="service-content"></p>
+    <p id="service-content2"></p>
+    <h3>Benefits:</h3>
+    <ul id="service-benefits"></ul>
+    <a href="services.html">Back to Services</a>
+</body>
+<script>
+    <!-- service-details.js -->
+document.addEventListener("DOMContentLoaded", async function () {
+    const params = new URLSearchParams(window.location.search);
+    const title = params.get("title");
+    const response = await fetch("services.json");
+    const data = await response.json();
+    const service = data.services.find(s => s.title === title);
+    
+    if (service) {
+        document.getElementById("service-title").textContent = service.title;
+        document.getElementById("service-description").textContent = service.description;
+        document.getElementById("service-content").textContent = service.content;
+        document.getElementById("service-content2").textContent = service.content2;
+        const benefitsList = document.getElementById("service-benefits");
+        service.benefits.forEach(benefit => {
+            const li = document.createElement("li");
+            li.textContent = benefit;
+            benefitsList.appendChild(li);
+        });
+    } else {
+        document.body.innerHTML = "<h1>Service Not Found</h1><a href='services.html'>Back to Services</a>";
+    }
+});
+</script>
+</html>
